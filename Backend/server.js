@@ -6,6 +6,7 @@ import userRouter from "./routes/userRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import "dotenv/config"; // Correct usage
 import orderRouter from "./routes/orderRoute.js";
+import path from "path";
 
 // App config
 const app = express();
@@ -20,16 +21,21 @@ connectDB();
 
 // API endpoints
 app.use("/api/food", foodRouter);
-app.use("/images", express.static('uploads'));
+app.use("/images", express.static("uploads"));
 app.use("/api/user", userRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
-app.get("/", (req, res) => {
-    res.send("API Working");
+const __dirname = path.resolve();
+
+// Serve frontend
+app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
+// Catch-all route to serve the frontend's index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend/dist", "index.html"));
 });
 
-
 app.listen(port, () => {
-    console.log(`Server started on http://localhost:${port}`);
+  console.log(`Server started on http://localhost:${port}`);
 });
